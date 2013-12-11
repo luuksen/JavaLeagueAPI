@@ -5,28 +5,62 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import at.luuk.lolapiwrapper.entity.Champion;
+import at.luuk.lolapiwrapper.entity.ChampionList;
 import at.luuk.lolapiwrapper.entity.League;
-import at.luuk.lolapiwrapper.entity.Leagues;
+import at.luuk.lolapiwrapper.entity.MasteryPages;
+import at.luuk.lolapiwrapper.entity.PlayerStatsSummaryList;
+import at.luuk.lolapiwrapper.entity.RankedStats;
 import at.luuk.lolapiwrapper.entity.RecentGames;
+import at.luuk.lolapiwrapper.entity.RunePages;
 import at.luuk.lolapiwrapper.entity.Summoner;
+import at.luuk.lolapiwrapper.entity.Team;
 import at.luuk.lolapiwrapper.exception.LeagueAPIException;
 
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2013 Lukas Greilinger
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ * @author Lukas Greilinger (luukseN @ EUW)
+ * @version 1.0
+ *
+ */
 public class LeagueAPI {
 
 	public enum Region {
-		EUW,
-		EUNE,
-		NA;
+		EUW, EUNE, NA;
 	}
-	
+
+	public enum Season {
+		SEASON3, SEASON4;
+	}
+
 	private String apiKey;
 	private static String BASEURL_V1;
 	private static String BASEURL_V2;
@@ -38,7 +72,7 @@ public class LeagueAPI {
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a Summoner object from the
+	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
 	 * official Riot API and therefore uses one of your API key requests you can
 	 * make for a short period of time. You may consider caching the data you
 	 * get or ask Riot for a higher-priority API key. <br>
@@ -47,18 +81,43 @@ public class LeagueAPI {
 	 * 
 	 * @param summonerName
 	 *            the summoner's name
-	 * @return summoner object
-	 * @throws LeagueAPIException
+	 * @return summoner
 	 */
 	public Summoner getSummoner(String summonerName) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/by-name/" + summonerName + "?api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/by-name/" + summonerName + "?api_key="
+				+ this.apiKey);
+		Summoner summoner = new Gson().fromJson(jsonString, Summoner.class);
+
+		return summoner;
+	}
+	
+	public Summoner getSummoner(Long summonerId) {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "?api_key="
+				+ this.apiKey);
 		Summoner summoner = new Gson().fromJson(jsonString, Summoner.class);
 
 		return summoner;
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a Summoner object from the
+	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
+	 * official Riot API and therefore uses one of your API key requests you can
+	 * make for a short period of time. You may consider caching the data you
+	 * get or ask Riot for a higher-priority API key. <br>
+	 * <br>
+	 * Retrieves recent games of given summonerId.
+	 * 
+	 * @return list of all champions in the game
+	 */
+	public ChampionList getChampionList() {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "champion?api_key=" + this.apiKey);
+		ChampionList championList = new Gson().fromJson(jsonString, ChampionList.class);
+
+		return championList;
+	}
+
+	/**
+	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
 	 * official Riot API and therefore uses one of your API key requests you can
 	 * make for a short period of time. You may consider caching the data you
 	 * get or ask Riot for a higher-priority API key. <br>
@@ -68,22 +127,76 @@ public class LeagueAPI {
 	 * @param summonerId
 	 *            summoner's id
 	 * @return recent games
-	 * @throws LeagueAPIException
 	 */
 	public RecentGames getRecentGames(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "game/by-summoner/" + summonerId + "/recent?api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "game/by-summoner/" + summonerId + "/recent?api_key="
+				+ this.apiKey);
 		RecentGames recentGames = new Gson().fromJson(jsonString, RecentGames.class);
 
 		return recentGames;
 	}
-	
+
+	/**
+	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
+	 * official Riot API and therefore uses one of your API key requests you can
+	 * make for a short period of time. You may consider caching the data you
+	 * get or ask Riot for a higher-priority API key. <br>
+	 * <br>
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @return A map with the league name and the related League object
+	 */
 	public Map<String, League> getLeagues(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V2 + "league/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V2 + "league/by-summoner/" + summonerId + "?api_key="
+				+ this.apiKey);
 
 		Gson gson = new Gson();
-		Map<String, League> decoded = gson.fromJson(jsonString, new TypeToken<Map<String, League>>(){}.getType());
-		
+		Map<String, League> decoded = gson.fromJson(jsonString, new TypeToken<Map<String, League>>() {
+		}.getType());
+
 		return decoded;
+	}
+
+	public PlayerStatsSummaryList getPlayerStats(Long summonerId, Season season) {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/summary?season="
+				+ season + "&api_key=" + this.apiKey);
+		PlayerStatsSummaryList playerStatsSummaryList = new Gson().fromJson(jsonString, PlayerStatsSummaryList.class);
+
+		return playerStatsSummaryList;
+	}
+
+	public RankedStats getRankedStats(Long summonerId, Season season) {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/ranked?season="
+				+ season + "&api_key=" + this.apiKey);
+		RankedStats rankedStats = new Gson().fromJson(jsonString, RankedStats.class);
+
+		return rankedStats;
+	}
+
+	public List<Team> getTeams(Long summonerId) {
+		String jsonString = LeagueAPI
+				.request(BASEURL_V2 + "team/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
+
+		Gson gson = new Gson();
+		List<Team> teams = gson.fromJson(jsonString, new TypeToken<List<Team>>() {
+		}.getType());
+
+		return teams;
+	}
+	
+	public MasteryPages getMasteryPages(Long summonerId) {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/masteries?api_key=" + this.apiKey);
+		MasteryPages masteryPages = new Gson().fromJson(jsonString, MasteryPages.class);
+
+		return masteryPages;
+	}
+	
+	public RunePages getRunePages(Long summonerId) {
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/runes?api_key=" + this.apiKey);
+		RunePages runePages = new Gson().fromJson(jsonString, RunePages.class);
+
+		return runePages;
 	}
 
 	public static String request(String url) {
@@ -103,7 +216,7 @@ public class LeagueAPI {
 				throw new LeagueAPIException("Error 404: The API couldn't find a match to your parameters.");
 			}
 			if (inputStream == null) {
-				throw new LeagueAPIException("Response empty");
+				throw new LeagueAPIException("Error: Empty response.");
 			}
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
