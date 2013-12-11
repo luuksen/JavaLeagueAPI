@@ -27,6 +27,10 @@ RunePages getRunePages(Long summonerId)
 ```
 The object structure was taken over by Riot's API, so you can check their API reference in order to see all the data and where/how you can retrieve it over this wrapper.
 
+Example
+---
+Check out the `LeagueAPIExample.java`. It shows some of the stuff I printed out while testing the wrapper. There is much more data to explore, so have fun coding.
+
 Feedback
 ---
 I hope you can use this wrapper or may use it one day. It is completely free to use and you can also edit it. I'd love feedback if and where you used it and also what you would like to be changed.
