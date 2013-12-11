@@ -1,4 +1,4 @@
-java-lol-api-wrapper
+Java League of Legends API Wrapper
 ====================
 
 Java League of Legends API Wrapper
