@@ -1,11 +1,9 @@
 Java League of Legends API Wrapper
 ====================
-
 JavaLeagueAPI is an object-oriented wrapper for Riot's official League of Legends API released on 11th December, 2013.
 
 Usage
 ---
-
 Using this wrapper is very simple. You can download the .jar file from github repository in the same folder as this README and include it in you Java project.
 
 To use the wrapper, you have to initialize a `LeagueAPI` object
@@ -31,7 +29,6 @@ The object structure was taken over by Riot's API, so you can check their API re
 
 Feedback
 ---
-
 I hope you can use this wrapper or may use it one day. It is completely free to use and you can also edit it. I'd love feedback if and where you used it and also what you would like to be changed.
 
 Feel free to contact me in League of Legends: luukseN @ EUW
