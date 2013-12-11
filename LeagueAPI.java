@@ -13,7 +13,6 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import at.luuk.lolapiwrapper.entity.Champion;
 import at.luuk.lolapiwrapper.entity.ChampionList;
 import at.luuk.lolapiwrapper.entity.League;
 import at.luuk.lolapiwrapper.entity.MasteryPages;
@@ -26,9 +25,8 @@ import at.luuk.lolapiwrapper.entity.Team;
 import at.luuk.lolapiwrapper.exception.LeagueAPIException;
 
 /**
- * The MIT License (MIT)
- * Copyright (c) 2013 Lukas Greilinger
- *
+ * The MIT License (MIT) Copyright (c) 2013 Lukas Greilinger
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -44,12 +42,12 @@ import at.luuk.lolapiwrapper.exception.LeagueAPIException;
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  * 
  * @author Lukas Greilinger (luukseN @ EUW)
  * @version 1.0
- *
+ * 
  */
 public class LeagueAPI {
 
@@ -72,11 +70,6 @@ public class LeagueAPI {
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
-	 * official Riot API and therefore uses one of your API key requests you can
-	 * make for a short period of time. You may consider caching the data you
-	 * get or ask Riot for a higher-priority API key. <br>
-	 * <br>
 	 * Retrieves a summoner object of the summoner with given name.
 	 * 
 	 * @param summonerName
@@ -90,21 +83,22 @@ public class LeagueAPI {
 
 		return summoner;
 	}
-	
+
+	/**
+	 * Retrieves a summoner object of the summoner with given id.
+	 * 
+	 * @param summonerName
+	 *            the summoner's id
+	 * @return summoner
+	 */
 	public Summoner getSummoner(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "?api_key="
-				+ this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "?api_key=" + this.apiKey);
 		Summoner summoner = new Gson().fromJson(jsonString, Summoner.class);
 
 		return summoner;
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
-	 * official Riot API and therefore uses one of your API key requests you can
-	 * make for a short period of time. You may consider caching the data you
-	 * get or ask Riot for a higher-priority API key. <br>
-	 * <br>
 	 * Retrieves recent games of given summonerId.
 	 * 
 	 * @return list of all champions in the game
@@ -117,11 +111,6 @@ public class LeagueAPI {
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
-	 * official Riot API and therefore uses one of your API key requests you can
-	 * make for a short period of time. You may consider caching the data you
-	 * get or ask Riot for a higher-priority API key. <br>
-	 * <br>
 	 * Retrieves recent games of given summonerId.
 	 * 
 	 * @param summonerId
@@ -137,11 +126,7 @@ public class LeagueAPI {
 	}
 
 	/**
-	 * <strong>CAREFUL:</strong> This retrieves a JSON response from the
-	 * official Riot API and therefore uses one of your API key requests you can
-	 * make for a short period of time. You may consider caching the data you
-	 * get or ask Riot for a higher-priority API key. <br>
-	 * <br>
+	 * Retrieves leagues of summoner with given summonerId
 	 * 
 	 * @param summonerId
 	 *            summoner's id
@@ -158,6 +143,15 @@ public class LeagueAPI {
 		return decoded;
 	}
 
+	/**
+	 * Retrieves player stats of summoner with given summonerId and season
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @param season
+	 *            the season
+	 * @return A map with the league name and the related League object
+	 */
 	public PlayerStatsSummaryList getPlayerStats(Long summonerId, Season season) {
 		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/summary?season="
 				+ season + "&api_key=" + this.apiKey);
@@ -166,6 +160,15 @@ public class LeagueAPI {
 		return playerStatsSummaryList;
 	}
 
+	/**
+	 * Retrieves ranked stats of summoner with given summoner id and season
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @param season
+	 *            season
+	 * @return {@link RankedStats} object
+	 */
 	public RankedStats getRankedStats(Long summonerId, Season season) {
 		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/ranked?season="
 				+ season + "&api_key=" + this.apiKey);
@@ -174,6 +177,13 @@ public class LeagueAPI {
 		return rankedStats;
 	}
 
+	/**
+	 * Retrieves teams of summoner with given summoner id
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @return list of {@link Team} objects
+	 */
 	public List<Team> getTeams(Long summonerId) {
 		String jsonString = LeagueAPI
 				.request(BASEURL_V2 + "team/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
@@ -184,14 +194,29 @@ public class LeagueAPI {
 
 		return teams;
 	}
-	
+
+	/**
+	 * Retrieves mastery pages of summoner with given summoner id
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @return {@link MastersPages} object
+	 */
 	public MasteryPages getMasteryPages(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/masteries?api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/masteries?api_key="
+				+ this.apiKey);
 		MasteryPages masteryPages = new Gson().fromJson(jsonString, MasteryPages.class);
 
 		return masteryPages;
 	}
-	
+
+	/**
+	 * Retrieves rune pages of summoner with given summoner id
+	 * 
+	 * @param summonerId
+	 *            summoner's id
+	 * @return {@link RunePages} object
+	 */
 	public RunePages getRunePages(Long summonerId) {
 		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/runes?api_key=" + this.apiKey);
 		RunePages runePages = new Gson().fromJson(jsonString, RunePages.class);
