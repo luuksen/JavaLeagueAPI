@@ -1,6 +1,6 @@
 Java League of Legends API Wrapper
 ====================
-JavaLeagueAPI is an object-oriented wrapper for Riot's official League of Legends API released on 11th December, 2013.
+<b>JavaLeagueAPI</b> is an object-oriented wrapper for Riot's official League of Legends API released on 11th December, 2013 written in <b>Java</b>.
 
 Usage
 ---
