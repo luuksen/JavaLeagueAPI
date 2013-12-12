@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -77,8 +78,7 @@ public class LeagueAPI {
 	 * @return summoner
 	 */
 	public Summoner getSummoner(String summonerName) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/by-name/" + summonerName + "?api_key="
-				+ this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/by-name/" + summonerName + "?api_key=" + this.apiKey);
 		Summoner summoner = new Gson().fromJson(jsonString, Summoner.class);
 
 		return summoner;
@@ -118,8 +118,7 @@ public class LeagueAPI {
 	 * @return recent games
 	 */
 	public RecentGames getRecentGames(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "game/by-summoner/" + summonerId + "/recent?api_key="
-				+ this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "game/by-summoner/" + summonerId + "/recent?api_key=" + this.apiKey);
 		RecentGames recentGames = new Gson().fromJson(jsonString, RecentGames.class);
 
 		return recentGames;
@@ -133,8 +132,7 @@ public class LeagueAPI {
 	 * @return A map with the league name and the related League object
 	 */
 	public Map<String, League> getLeagues(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V2 + "league/by-summoner/" + summonerId + "?api_key="
-				+ this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V2 + "league/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
 
 		Gson gson = new Gson();
 		Map<String, League> decoded = gson.fromJson(jsonString, new TypeToken<Map<String, League>>() {
@@ -153,8 +151,8 @@ public class LeagueAPI {
 	 * @return A map with the league name and the related League object
 	 */
 	public PlayerStatsSummaryList getPlayerStats(Long summonerId, Season season) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/summary?season="
-				+ season + "&api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/summary?season=" + season + "&api_key="
+				+ this.apiKey);
 		PlayerStatsSummaryList playerStatsSummaryList = new Gson().fromJson(jsonString, PlayerStatsSummaryList.class);
 
 		return playerStatsSummaryList;
@@ -170,8 +168,8 @@ public class LeagueAPI {
 	 * @return {@link RankedStats} object
 	 */
 	public RankedStats getRankedStats(Long summonerId, Season season) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/ranked?season="
-				+ season + "&api_key=" + this.apiKey);
+		String jsonString = LeagueAPI
+				.request(BASEURL_V1 + "stats/by-summoner/" + summonerId + "/ranked?season=" + season + "&api_key=" + this.apiKey);
 		RankedStats rankedStats = new Gson().fromJson(jsonString, RankedStats.class);
 
 		return rankedStats;
@@ -185,8 +183,7 @@ public class LeagueAPI {
 	 * @return list of {@link Team} objects
 	 */
 	public List<Team> getTeams(Long summonerId) {
-		String jsonString = LeagueAPI
-				.request(BASEURL_V2 + "team/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V2 + "team/by-summoner/" + summonerId + "?api_key=" + this.apiKey);
 
 		Gson gson = new Gson();
 		List<Team> teams = gson.fromJson(jsonString, new TypeToken<List<Team>>() {
@@ -203,8 +200,7 @@ public class LeagueAPI {
 	 * @return {@link MastersPages} object
 	 */
 	public MasteryPages getMasteryPages(Long summonerId) {
-		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/masteries?api_key="
-				+ this.apiKey);
+		String jsonString = LeagueAPI.request(BASEURL_V1 + "summoner/" + summonerId + "/masteries?api_key=" + this.apiKey);
 		MasteryPages masteryPages = new Gson().fromJson(jsonString, MasteryPages.class);
 
 		return masteryPages;
@@ -225,16 +221,25 @@ public class LeagueAPI {
 	}
 
 	public static String request(String url) {
-		URLConnection connection = null;
+		HttpURLConnection connection = null;
 		StringBuilder builder = null;
 
 		try {
 			URL urlIn = new URL(url);
-			connection = urlIn.openConnection();
+			connection = (HttpURLConnection) urlIn.openConnection();
 			String line;
 			builder = new StringBuilder();
 
 			InputStream inputStream = null;
+
+			int code = connection.getResponseCode();
+			switch (code) {
+			case LeagueAPIException.ERROR_API_KEY_LIMIT:
+				throw new LeagueAPIException(LeagueAPIException.ERROR_API_KEY_LIMIT);
+			case LeagueAPIException.ERROR_API_KEY_WRONG:
+				throw new LeagueAPIException(LeagueAPIException.ERROR_API_KEY_WRONG);
+			}
+
 			try {
 				inputStream = connection.getInputStream();
 			} catch (FileNotFoundException e) {
