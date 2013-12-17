@@ -6,7 +6,7 @@ Java League of Legends API Wrapper
 
 Usage
 ---
-Using this wrapper is very simple. You can download the .jar file <a href="https://www.dropbox.com/s/sarbqurrqaukj7a/JavaLeagueAPI.jar"><b>here</b></a> and include it in you Java project.
+Using this wrapper is very simple. You can download the .jar file <a href="https://www.dropbox.com/s/sarbqurrqaukj7a/JavaLeagueAPI.jar"><b>here</b></a> and include it in your Java project.
 
 To use the wrapper, you have to initialize a `LeagueAPI` object
 ```java
