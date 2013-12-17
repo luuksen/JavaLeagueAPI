@@ -31,7 +31,7 @@ The object structure was taken over by Riot's API, so you can check their API re
 
 Downlaod
 ---
-<a href="https://www.dropbox.com/s/sarbqurrqaukj7a/JavaLeagueAPI.jar">Download v1.0</a>
+<a href="https://www.dropbox.com/s/sarbqurrqaukj7a/JavaLeagueAPI.jar">Download v1.1</a>
 
 Example
 ---
