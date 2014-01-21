@@ -1,4 +1,4 @@
-This API is currently outdated! I'll update this message as soon as I update it to Riot's curent API version!
+This API is currently outdated! I'll update this message as soon as I update the wrapper to Riot's current API version!
 -
 
 Java League of Legends API Wrapper
